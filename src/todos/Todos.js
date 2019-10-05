@@ -15,10 +15,12 @@ const Todos = props => {
   function updateValue(e) {
     globalActions.setNewTaskSelect(e.target.name, e.target.value);
     let maxId = Math.max.apply(Math, globalState.tasks.map(o => o.id));
-    console.log(maxId);
+    globalActions.setNewTaskSelect("id", maxId >= 0 ? maxId + 1 : 0);
+  }
 
-    globalActions.setNewBoxSelect("id", maxId >= 0 ? maxId + 1 : 0);
-    console.log(globalState);
+  function remove(e, id) {
+    e.stopPropagation();
+    globalActions.removeTask(id);
   }
 
   return (
@@ -83,14 +85,20 @@ const Todos = props => {
       <Columns>
         {globalState.tasks.map(x => (
           <Columns.Column size={6} key={x.id}>
-            {" "}
             <Message color="info">
-              <Message.Body>
-                <Heading size={5}>{x.taskTitle}</Heading>
-                <Heading subtitle size={6} renderAs="h2">
-                  {x.taskDescription}
-                </Heading>
-              </Message.Body>
+              <Message.Header>
+                {x.taskTitle}
+                <Button onClick={event => remove(event, x.id)} remove />
+              </Message.Header>
+
+              {false && x.taskDescription && (
+                <Message.Body>
+                  <Heading size={5} />
+                  <Heading subtitle size={6} renderAs="h2">
+                    {x.taskDescription}
+                  </Heading>
+                </Message.Body>
+              )}
             </Message>{" "}
           </Columns.Column>
         ))}

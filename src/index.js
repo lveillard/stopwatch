@@ -26,17 +26,25 @@ import { useGlobal } from "./store";
 const App = () => {
   const [globalState, globalActions] = useGlobal();
 
+  const [totalTemp, setTotalTemp] = useState({ sec: 0, min: 0 });
+
   const style = { textAlign: "center" };
+
+  useEffect(() => {
+    let seconds = globalState.boxes.reduce((a, b) => a + (b.time || 0), 0);
+    setTotalTemp({
+      min: Math.floor((seconds + 1) / 60),
+      sec: (seconds + 1) % 60
+    });
+  }, [globalState.boxes]);
 
   // const inputRef = useRef(null);
 
   function updateValue(e) {
     globalActions.setNewBoxSelect(e.target.name, e.target.value);
     let maxId = Math.max.apply(Math, globalState.boxes.map(o => o.id));
-    console.log(maxId);
 
     globalActions.setNewBoxSelect("id", maxId >= 0 ? maxId + 1 : 0);
-    console.log(globalState);
   }
 
   return (
@@ -60,7 +68,7 @@ const App = () => {
                 <Heading renderAs="p" heading>
                   Total tasks
                 </Heading>
-                <Heading renderAs="p">3,210</Heading>
+                <Heading renderAs="p">{globalState.tasks.length}</Heading>
               </div>
             </Level.Item>
             <Level.Item style={style}>
@@ -68,7 +76,10 @@ const App = () => {
                 <Heading renderAs="p" heading>
                   Total time
                 </Heading>
-                <Heading renderAs="p">210</Heading>
+                <Heading renderAs="p">
+                  {totalTemp.min !== 0 && totalTemp.min + " min "}
+                  {totalTemp.sec + "s"}{" "}
+                </Heading>
               </div>
             </Level.Item>
             <Level.Item style={style}>
@@ -76,7 +87,7 @@ const App = () => {
                 <Heading renderAs="p" heading>
                   Tasks done
                 </Heading>
-                <Heading renderAs="p">33</Heading>
+                <Heading renderAs="p">0</Heading>
               </div>
             </Level.Item>
           </Level>

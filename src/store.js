@@ -16,22 +16,22 @@ const initialState = {
     {
       id: 1,
       taskTitle: "Title",
-      taskDescription: "Subtitle"
+      taskDescription: "Description"
     },
     {
       id: 2,
       taskTitle: "Title",
-      taskDescription: "Subtitle"
+      taskDescription: "Description"
     },
     {
       id: 3,
       taskTitle: "Title",
-      taskDescription: "Subtitle"
+      taskDescription: "Description"
     },
     {
       id: 4,
       taskTitle: "Title",
-      taskDescription: "Subtitle"
+      taskDescription: "Description"
     }
   ],
   boxes: [
@@ -55,6 +55,13 @@ const actions = {
     store.setState({ tasks: store.state.tasks.concat(task) });
 
     store.setState({ newTask: { type: "basic", taskTitle: "" } });
+    console.log(store.state.tasks);
+  },
+
+  removeTask: (store, id) => {
+    store.setState({
+      tasks: store.state.tasks.filter(item => item.id !== id)
+    });
     console.log(store.state.tasks);
   },
 

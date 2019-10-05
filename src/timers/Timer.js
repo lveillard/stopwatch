@@ -51,7 +51,7 @@ const Timer = props => {
       clearInterval(interval);
     }
     return () => clearInterval(interval);
-  }, [isActive, seconds]);
+  }, [isActive, seconds, props.id, globalActions]);
 
   return (
     <Tile size={4} kind="parent">
