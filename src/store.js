@@ -48,9 +48,9 @@ const initialState = {
 const actions = {
   // TODO MANAGEMENT
 
-  increaseTimer: (store, id, seconds) => {
+  increaseTimer: (store, id) => {
     const oldValue = store.state.tasks.find(x => x.id === id);
-    const newValue = { ...oldValue, time: seconds };
+    const newValue = { ...oldValue, time: oldValue.time + 1 };
     const indexOldElement = store.state.tasks.findIndex(
       ({ id }) => id === newValue.id
     );

@@ -9,6 +9,7 @@ import {
 } from "react-bulma-components";
 import { useGlobal } from "../store";
 import { hoursFormat } from "../helpers/helpers";
+const [seconds, setSeconds] = useState(0);
 
 const Todo = props => {
   const [globalState, globalActions] = useGlobal();
@@ -17,10 +18,11 @@ const Todo = props => {
     const status = globalState.tasks.find(x => x.id === props.id);
     let interval = null;
     if (status.isActive) {
-      console.log("el status", status);
       interval = setInterval(() => {
-        status.isActive &&
-          globalActions.increaseTimer(props.id, status.time + 1);
+        console.log(status.id);
+
+        globalActions.increaseTimer(status.id);
+        // setSeconds(seconds => seconds + 1);
       }, 1000);
     } else if (!status.isActive && status.time !== 0) {
       clearInterval(interval);
