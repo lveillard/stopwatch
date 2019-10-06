@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
 import moment from "moment";
+import { inmutableSet } from "./helpers/helpers";
 
 import useGlobalHook from "use-global-hook";
 
@@ -28,8 +29,9 @@ const initialState = {
       type: "timer",
       taskTitle: "Make a smoothie",
       taskDescription: "Description",
-      time: 512,
-      isActive: false
+      time: 0,
+      isActive: false,
+      activeChrono: null
     },
     {
       id: 3,
@@ -49,7 +51,8 @@ const initialState = {
       title: "💣 Interruption",
       type: "basic",
       time: 0,
-      isActive: false
+      isActive: false,
+      activeChrono: null
     },
     { id: 4, title: "📅 Meeting", type: "basic", time: 0, isActive: false },
     { id: 5, title: "⏸️ Break", type: "basic", time: 0, isActive: false },
@@ -60,7 +63,39 @@ const initialState = {
 };
 
 const actions = {
+  // generic
+  modifyLine: (store, type, id, field, value) => {
+    store.setState({
+      tasks: inmutableSet(store.state[type], id, field, value)
+    });
+  },
+
   // TODO MANAGEMENT
+
+  toggleTimer: (store, id, reset) => {
+    let current = store.state.tasks.find(x => x.id === id);
+
+    reset &&
+      store.setState({
+        tasks: inmutableSet(store.state.tasks, id, "time", 0)
+      });
+
+    if (current.activeChrono) {
+      //remove the chrono:
+      clearInterval(current.activeChrono);
+      store.setState({
+        tasks: inmutableSet(store.state.tasks, id, "activeChrono", null)
+      });
+    } else if (!reset) {
+      //create the chrono:
+      const interval = setInterval(() => {
+        store.actions.increaseTimer(id);
+      }, 1000);
+      store.setState({
+        tasks: inmutableSet(store.state.tasks, id, "activeChrono", interval)
+      });
+    }
+  },
 
   increaseTimer: (store, id) => {
     const oldValue = store.state.tasks.find(x => x.id === id);
@@ -71,21 +106,6 @@ const actions = {
     const newArray = Object.assign([...store.state.tasks], {
       [indexOldElement]: newValue
     });
-    store.setState({ tasks: newArray });
-  },
-
-  activeTimer: (store, id) => {
-    console.log("active", store.state.tasks);
-
-    const oldValue = store.state.tasks.find(x => x.id === id);
-    const newValue = { ...oldValue, isActive: !oldValue.isActive };
-    const indexOldElement = store.state.tasks.findIndex(
-      ({ id }) => id === newValue.id
-    );
-    const newArray = Object.assign([...store.state.tasks], {
-      [indexOldElement]: newValue
-    });
-
     store.setState({ tasks: newArray });
   },
 

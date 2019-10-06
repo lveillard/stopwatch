@@ -10,3 +10,13 @@ export const hoursFormat = seconds => {
     </React.Fragment>
   );
 };
+
+export const inmutableSet = (objeto, id, field, value) => {
+  const oldValue = objeto.find(x => x.id === id);
+  const newValue = { ...oldValue, [field]: value };
+  const indexOldElement = objeto.findIndex(({ id }) => id === newValue.id);
+  const newArray = Object.assign([...objeto], {
+    [indexOldElement]: newValue
+  });
+  return newArray;
+};
