@@ -6,14 +6,13 @@ import { hoursFormat } from "../helpers/helpers";
 const Timer = props => {
   const [globalState, globalActions] = useGlobal();
   const [count, setCount] = useState(0);
-  const [isActive, setIsActive] = useState(false);
   const [type, setType] = useState(
     globalState.boxes.find(x => x.id === props.id).type
   );
 
   function toggle() {
-    setIsActive(!isActive);
-    !isActive && setCount(count + 1);
+    !globalState.boxes.find(x => x.id === props.id).isActive &&
+      setCount(count + 1);
     globalActions.setActive(props.id);
   }
 
@@ -21,7 +20,6 @@ const Timer = props => {
     e.stopPropagation();
     setCount(0);
     globalActions.resetTime(props.id);
-    setIsActive(false);
   }
 
   function remove(e) {
@@ -30,18 +28,19 @@ const Timer = props => {
   }
 
   useEffect(() => {
+    const status = globalState.boxes.find(x => x.id === props.id);
     let interval = null;
-    if (isActive) {
+    if (status.isActive) {
       interval = setInterval(() => {
         globalActions.updateTime(props.id);
       }, 1000);
-    } else if (!isActive && 0 !== 0) {
+    } else if (!status.isActive && 0 !== 0) {
       clearInterval(interval);
     }
     return () => {
       clearInterval(interval);
     };
-  }, [isActive, props.id, globalActions]);
+  }, [props.id, globalActions]);
 
   return (
     <Tile size={4} kind="parent">
@@ -53,7 +52,7 @@ const Timer = props => {
         color={
           type === "to-do"
             ? "dark"
-            : isActive
+            : globalState.boxes.find(x => x.id === props.id).isActive
             ? "success"
             : globalState.boxes.find(x => x.id === props.id).time === 0
             ? "info"
