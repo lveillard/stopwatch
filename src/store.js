@@ -1,37 +1,35 @@
 import React, { useState, useEffect, useContext } from "react";
+import moment from "moment";
 
 import useGlobalHook from "use-global-hook";
 
 const initialState = {
   text: "null",
   newBox: { type: "basic", title: "" },
-  newTask: { type: "basic", taskTitle: "" },
+  newTask: { type: "basic", taskTitle: "", time: 0, isActive: false },
   current: null,
   tasks: [
     {
       id: 0,
-      taskTitle: "Link the add button",
-      taskDescription: "Make this work like the section of timers"
+      type: "basic",
+      taskTitle: "Buy some bananas 🍌🍌",
+      taskDescription: "Make this work like the section of timers",
+      isActive: false
     },
     {
       id: 1,
-      taskTitle: "Title",
-      taskDescription: "Description"
+      type: "basic",
+      taskTitle: "Buy whortleberries",
+      taskDescription: "Description",
+      isActive: false
     },
     {
       id: 2,
-      taskTitle: "Title",
-      taskDescription: "Description"
-    },
-    {
-      id: 3,
-      taskTitle: "Title",
-      taskDescription: "Description"
-    },
-    {
-      id: 4,
-      taskTitle: "Title",
-      taskDescription: "Description"
+      type: "timer",
+      taskTitle: "Make a smoothie",
+      taskDescription: "Description",
+      time: 512,
+      isActive: false
     }
   ],
   boxes: [
@@ -50,19 +48,44 @@ const initialState = {
 const actions = {
   // TODO MANAGEMENT
 
+  increaseTimer: (store, id, seconds) => {
+    const oldValue = store.state.tasks.find(x => x.id === id);
+    const newValue = { ...oldValue, time: seconds };
+    const indexOldElement = store.state.tasks.findIndex(
+      ({ id }) => id === newValue.id
+    );
+    const newArray = Object.assign([...store.state.tasks], {
+      [indexOldElement]: newValue
+    });
+    store.setState({ tasks: newArray });
+  },
+
+  activeTimer: (store, id) => {
+    console.log("active", store.state.tasks);
+
+    const oldValue = store.state.tasks.find(x => x.id === id);
+    const newValue = { ...oldValue, isActive: !oldValue.isActive };
+    const indexOldElement = store.state.tasks.findIndex(
+      ({ id }) => id === newValue.id
+    );
+    const newArray = Object.assign([...store.state.tasks], {
+      [indexOldElement]: newValue
+    });
+
+    store.setState({ tasks: newArray });
+  },
+
   addTask: (store, task) => {
-    console.log(task);
     store.setState({ tasks: store.state.tasks.concat(task) });
 
     store.setState({ newTask: { type: "basic", taskTitle: "" } });
-    console.log(store.state.tasks);
+    console.log("tasks", store.state.tasks);
   },
 
   removeTask: (store, id) => {
     store.setState({
       tasks: store.state.tasks.filter(item => item.id !== id)
     });
-    console.log(store.state.tasks);
   },
 
   setNewTaskSelect: (store, item, value) => {
@@ -80,7 +103,7 @@ const actions = {
     store.setState({ boxes: store.state.boxes.concat(box) });
 
     store.setState({ newBox: { type: "basic", title: "" } });
-    console.log(store.state.boxes);
+    console.log("boxes", store.state.boxes);
   },
 
   removeBox: (store, id) => {

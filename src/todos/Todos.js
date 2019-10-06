@@ -1,13 +1,7 @@
-import React, { useState, useEffect, useContext } from "react";
-import {
-  Columns,
-  Column,
-  Box,
-  Heading,
-  Message,
-  Button
-} from "react-bulma-components";
+import React, { useState, useEffect } from "react";
+import { Columns, Box, Button } from "react-bulma-components";
 import { useGlobal } from "../store";
+import Todo from "./Todo";
 
 const Todos = props => {
   const [globalState, globalActions] = useGlobal();
@@ -16,11 +10,9 @@ const Todos = props => {
     globalActions.setNewTaskSelect(e.target.name, e.target.value);
     let maxId = Math.max.apply(Math, globalState.tasks.map(o => o.id));
     globalActions.setNewTaskSelect("id", maxId >= 0 ? maxId + 1 : 0);
-  }
+    globalActions.setNewTaskSelect("time", 0);
 
-  function remove(e, id) {
-    e.stopPropagation();
-    globalActions.removeTask(id);
+    console.log(globalState.newTask);
   }
 
   return (
@@ -29,19 +21,21 @@ const Todos = props => {
         <p className="control">
           <span className="select">
             <select
-              style={{ width: "8rem" }}
+              style={{ width: "8.5rem" }}
               name="type"
               value={globalState.newTask.type}
               onChange={event =>
-                globalActions.setNewBoxSelect(
+                globalActions.setNewTaskSelect(
                   event.target.name,
                   event.target.value
                 )
               }
             >
               <option value="basic">Basic task</option>
-              <option value="timer-task">Timer-task</option>
-              <option value="parent-task">Parent-task </option>
+              <option value="timer">Timer-task</option>
+              <option disabled value="parent-task">
+                Parent-task
+              </option>
             </select>
           </span>
         </p>
@@ -84,23 +78,7 @@ const Todos = props => {
 
       <Columns>
         {globalState.tasks.map(x => (
-          <Columns.Column size={6} key={x.id}>
-            <Message color="info">
-              <Message.Header>
-                {x.taskTitle}
-                <Button onClick={event => remove(event, x.id)} remove />
-              </Message.Header>
-
-              {false && x.taskDescription && (
-                <Message.Body>
-                  <Heading size={5} />
-                  <Heading subtitle size={6} renderAs="h2">
-                    {x.taskDescription}
-                  </Heading>
-                </Message.Body>
-              )}
-            </Message>{" "}
-          </Columns.Column>
+          <Todo key={x.id} id={x.id} info={x} />
         ))}
       </Columns>
     </Box>

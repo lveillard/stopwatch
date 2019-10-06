@@ -1,13 +1,13 @@
 import React, { useState, useEffect, useContext } from "react";
-import { Columns, Heading, Tile, Button } from "react-bulma-components";
+import { Columns, Heading, Tile, Button, Tag } from "react-bulma-components";
 import { useGlobal } from "../store";
+import { hoursFormat } from "../helpers/helpers";
 
 const Timer = props => {
   const [globalState, globalActions] = useGlobal();
 
   const [seconds, setSeconds] = useState(0);
   const [count, setCount] = useState(0);
-  const [temp, setTemp] = useState({ sec: 0, min: 0 });
   const [isActive, setIsActive] = useState(false);
   const [type, setType] = useState(
     globalState.boxes.find(x => x.id === props.id).type
@@ -22,7 +22,6 @@ const Timer = props => {
   function reset(e) {
     e.stopPropagation();
     setSeconds(0);
-    setTemp({ sec: 0, min: 0 });
     setCount(0);
     globalActions.resetTime(props.id);
     setIsActive(false);
@@ -30,7 +29,6 @@ const Timer = props => {
 
   function remove(e) {
     e.stopPropagation();
-    console.log(e.target);
     globalActions.removeBox(props.id);
   }
 
@@ -38,11 +36,6 @@ const Timer = props => {
     let interval = null;
     if (isActive) {
       interval = setInterval(() => {
-        setTemp({
-          min: Math.floor((seconds + 1) / 60),
-          sec: (seconds + 1) % 60
-        });
-
         globalActions.updateTime(props.id, seconds);
 
         setSeconds(seconds => seconds + 1);
@@ -50,7 +43,9 @@ const Timer = props => {
     } else if (!isActive && seconds !== 0) {
       clearInterval(interval);
     }
-    return () => clearInterval(interval);
+    return () => {
+      clearInterval(interval);
+    };
   }, [isActive, seconds, props.id, globalActions]);
 
   return (
@@ -76,15 +71,14 @@ const Timer = props => {
         }
 
         <button className="delete" onClick={remove} />
+
         <Heading size={5} style={{ textAlign: "center" }}>
           {" "}
           {props.title ? props.title : "Timer"}{" "}
         </Heading>
         <div className="timer">
           <div className="time">
-            {" "}
-            {temp.min !== 0 && temp.min + " min "}
-            {temp.sec + "s"}
+            {hoursFormat(globalState.boxes.find(x => x.id === props.id).time)}
           </div>
 
           <div className="events"> {count} events </div>

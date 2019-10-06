@@ -2,6 +2,8 @@ import React, { useState, useContext, useEffect, useRef } from "react";
 import ReactDOM from "react-dom";
 import Timer from "./timers/Timer";
 import Todos from "./todos/Todos";
+import { hoursFormat } from "./helpers/helpers";
+import moment from "moment";
 
 import {
   Container,
@@ -31,11 +33,7 @@ const App = () => {
   const style = { textAlign: "center" };
 
   useEffect(() => {
-    let seconds = globalState.boxes.reduce((a, b) => a + (b.time || 0), 0);
-    setTotalTemp({
-      min: Math.floor((seconds + 1) / 60),
-      sec: (seconds + 1) % 60
-    });
+    setTotalTemp(globalState.boxes.reduce((a, b) => a + (b.time || 0), 0));
   }, [globalState.boxes]);
 
   // const inputRef = useRef(null);
@@ -66,6 +64,14 @@ const App = () => {
             <Level.Item style={style}>
               <div>
                 <Heading renderAs="p" heading>
+                  Today
+                </Heading>
+                <Heading renderAs="p">{moment().format("DD/MM/YYYY")}</Heading>
+              </div>
+            </Level.Item>
+            <Level.Item style={style}>
+              <div>
+                <Heading renderAs="p" heading>
                   Total tasks
                 </Heading>
                 <Heading renderAs="p">{globalState.tasks.length}</Heading>
@@ -76,10 +82,7 @@ const App = () => {
                 <Heading renderAs="p" heading>
                   Total time
                 </Heading>
-                <Heading renderAs="p">
-                  {totalTemp.min !== 0 && totalTemp.min + " min "}
-                  {totalTemp.sec + "s"}{" "}
-                </Heading>
+                <Heading renderAs="p">{hoursFormat(totalTemp)}</Heading>
               </div>
             </Level.Item>
             <Level.Item style={style}>
@@ -100,7 +103,7 @@ const App = () => {
             <p className="control">
               <span className="select">
                 <select
-                  style={{ width: "8rem" }}
+                  style={{ width: "8.5rem" }}
                   name="type"
                   value={globalState.newBox.type}
                   onChange={event =>
@@ -111,9 +114,15 @@ const App = () => {
                   }
                 >
                   <option value="basic">Basic timer</option>
-                  <option value="To-do">To-do</option>
-                  <option value="detailed">Detailed </option>
-                  <option value="exclusive">Exclusive</option>
+                  <option disabled value="To-do">
+                    To-do
+                  </option>
+                  <option disabled value="detailed">
+                    Detailed{" "}
+                  </option>
+                  <option disabled value="exclusive">
+                    Exclusive
+                  </option>
                 </select>
               </span>
             </p>
@@ -178,14 +187,22 @@ const App = () => {
               <strong />
               <ul style={{ listStyleType: "circle", marginLeft: "30px" }}>
                 <li>✔ Disable button if no text </li>
+                <li>✔ Add global summary</li>
                 <li>Autofocus input </li>
+                <li>
+                  ✔Timer tasks front: <em>13m 19s</em>
+                </li>
+                <li>interruptions type and shortcuts </li>
+                <li>✔Timer tasks back</li>
+                <li>Send tasks to done </li>
                 <li>✔ Add on enter </li>
-                <li>Unify boxs props</li>
+                <li>✔Unify boxs props</li>
                 <li>Edit titles</li>
                 <li>Remove/Add events</li>
                 <li>Fix ugly front issues 🙊 </li>
                 <li>Exclusive boxes (turns off the rest)</li>
                 <li>To-do boxes </li>
+
                 <li>Detailed boxes</li>
               </ul>
             </Message.Body>
