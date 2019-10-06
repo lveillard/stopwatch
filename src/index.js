@@ -41,8 +41,8 @@ const App = () => {
   function updateValue(e) {
     globalActions.setNewBoxSelect(e.target.name, e.target.value);
     let maxId = Math.max.apply(Math, globalState.boxes.map(o => o.id));
-
     globalActions.setNewBoxSelect("id", maxId >= 0 ? maxId + 1 : 0);
+    globalActions.setNewBoxSelect("time", 0);
   }
 
   return (

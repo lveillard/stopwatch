@@ -30,27 +30,41 @@ const initialState = {
       taskDescription: "Description",
       time: 512,
       isActive: false
+    },
+    {
+      id: 3,
+      type: "timer",
+      taskTitle: "Make a smoothie",
+      taskDescription: "Description",
+      time: 10,
+      isActive: false
     }
   ],
   boxes: [
-    { id: 0, title: "📧 Emails", type: "basic", time: 0 },
-    { id: 1, title: "🗣️ Slack", type: "basic", time: 0 },
-    { id: 2, title: "📝 Feature", type: "basic", time: 0 },
-    { id: 3, title: "💣 Interruption", type: "basic", time: 0 },
-    { id: 4, title: "📅 Meeting", type: "basic", time: 0 },
-    { id: 5, title: "⏸️ Break", type: "basic", time: 0 },
-    { id: 6, title: "🚀 Roadmap", type: "basic", time: 0 },
-    { id: 7, title: "❓ Asking", type: "basic", time: 0 },
-    { id: 8, title: "🐞 Bug", type: "basic", time: 0 }
+    { id: 0, title: "📧 Emails", type: "basic", time: 0, isActive: false },
+    { id: 1, title: "🗣️ Slack", type: "basic", time: 0, isActive: false },
+    { id: 2, title: "📝 Feature", type: "basic", time: 0, isActive: false },
+    {
+      id: 3,
+      title: "💣 Interruption",
+      type: "basic",
+      time: 0,
+      isActive: false
+    },
+    { id: 4, title: "📅 Meeting", type: "basic", time: 0, isActive: false },
+    { id: 5, title: "⏸️ Break", type: "basic", time: 0, isActive: false },
+    { id: 6, title: "🚀 Roadmap", type: "basic", time: 0, isActive: false },
+    { id: 7, title: "❓ Asking", type: "basic", time: 0, isActive: false },
+    { id: 8, title: "🐞 Bug", type: "basic", time: 0, isActive: false }
   ]
 };
 
 const actions = {
   // TODO MANAGEMENT
 
-  increaseTimer: (store, id, seconds) => {
+  increaseTimer: (store, id) => {
     const oldValue = store.state.tasks.find(x => x.id === id);
-    const newValue = { ...oldValue, time: seconds };
+    const newValue = { ...oldValue, time: oldValue.time + 1 };
     const indexOldElement = store.state.tasks.findIndex(
       ({ id }) => id === newValue.id
     );
@@ -113,7 +127,7 @@ const actions = {
   },
 
   // 2.Box timers
-  updateTime: (store, id, time) => {
+  updateTime: (store, id) => {
     // old methof
     //let a = store.state.values;
     //a.find(x => x.id === id)
@@ -123,7 +137,7 @@ const actions = {
 
     // new nethod
     const oldValue = store.state.boxes.find(x => x.id === id);
-    const newValue = { ...oldValue, time: time + 1 };
+    const newValue = { ...oldValue, time: oldValue.time + 1 };
     const indexOldElement = store.state.boxes.findIndex(
       ({ id }) => id === newValue.id
     );
@@ -146,7 +160,16 @@ const actions = {
   },
   // 3. Last active box
   setActive: (store, id) => {
-    store.setState({ current: id });
+    const oldValue = store.state.boxes.find(x => x.id === id);
+    const newValue = { ...oldValue, isActive: !oldValue.isActive };
+    const indexOldElement = store.state.boxes.findIndex(
+      ({ id }) => id === newValue.id
+    );
+    const newArray = Object.assign([...store.state.boxes], {
+      [indexOldElement]: newValue
+    });
+
+    store.setState({ boxes: newArray });
   }
 };
 

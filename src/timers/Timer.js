@@ -5,8 +5,6 @@ import { hoursFormat } from "../helpers/helpers";
 
 const Timer = props => {
   const [globalState, globalActions] = useGlobal();
-
-  const [seconds, setSeconds] = useState(0);
   const [count, setCount] = useState(0);
   const [isActive, setIsActive] = useState(false);
   const [type, setType] = useState(
@@ -21,7 +19,6 @@ const Timer = props => {
 
   function reset(e) {
     e.stopPropagation();
-    setSeconds(0);
     setCount(0);
     globalActions.resetTime(props.id);
     setIsActive(false);
@@ -36,17 +33,15 @@ const Timer = props => {
     let interval = null;
     if (isActive) {
       interval = setInterval(() => {
-        globalActions.updateTime(props.id, seconds);
-
-        setSeconds(seconds => seconds + 1);
+        globalActions.updateTime(props.id);
       }, 1000);
-    } else if (!isActive && seconds !== 0) {
+    } else if (!isActive && 0 !== 0) {
       clearInterval(interval);
     }
     return () => {
       clearInterval(interval);
     };
-  }, [isActive, seconds, props.id, globalActions]);
+  }, [isActive, props.id, globalActions]);
 
   return (
     <Tile size={4} kind="parent">
@@ -60,7 +55,7 @@ const Timer = props => {
             ? "dark"
             : isActive
             ? "success"
-            : seconds === 0
+            : globalState.boxes.find(x => x.id === props.id).time === 0
             ? "info"
             : "warning"
         }

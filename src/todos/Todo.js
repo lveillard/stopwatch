@@ -14,13 +14,12 @@ const Todo = props => {
   const [globalState, globalActions] = useGlobal();
 
   useEffect(() => {
-    const status = globalState.tasks.find(x => x.id === props.id);
     let interval = null;
+    let status = globalState.tasks.find(x => x.id === props.id);
+
     if (status.isActive) {
-      console.log("el status", status);
       interval = setInterval(() => {
-        status.isActive &&
-          globalActions.increaseTimer(props.id, status.time + 1);
+        globalActions.increaseTimer(props.id);
       }, 1000);
     } else if (!status.isActive && status.time !== 0) {
       clearInterval(interval);
