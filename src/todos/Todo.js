@@ -26,7 +26,7 @@ const Todo = props => {
             <Checkbox
               checked={globalState.tasks.find(x => x.id === props.id).done}
               onClick={() =>
-                globalActions.modifyLine("tasks", props.id, "done", "true")
+                globalActions.modifyLine("tasks", props.id, "done", true)
               }
             >
               {" "}

@@ -1,6 +1,7 @@
 import React, { useState, useContext, useEffect, useRef } from "react";
 import ReactDOM from "react-dom";
 import Timer from "./timers/Timer";
+import Interruption from "./timers/Interruption";
 import Todos from "./todos/Todos";
 import { hoursFormat } from "./helpers/helpers";
 import moment from "moment";
@@ -29,22 +30,37 @@ import { useGlobal } from "./store";
 const App = () => {
   const [globalState, globalActions] = useGlobal();
 
-  const [totalTempTasks, setTotalTempTasks] = useState({ sec: 0, min: 0 });
-  const [totalTempTimers, setTotalTempTimers] = useState({ sec: 0, min: 0 });
+  const [totalTempTasks, setTotalTempTasks] = useState(0);
+  const [totalTempTimers, setTotalTempTimers] = useState(0);
+  const [totalTempInterruptions, setTotalTempInterruptions] = useState(0);
+  const [totalInterruptions, setTotalInterruptions] = useState(0);
 
   const [isHidden, setIsHidden] = useState(false);
+  const [isSummaryExpanded, setIsSummaryExpanded] = useState(false);
+
   const [totalDone, setTotalDone] = useState(0);
 
   const style = { textAlign: "center" };
 
   useEffect(() => {
-    setTotalTempTasks(globalState.boxes.reduce((a, b) => a + (b.time || 0), 0));
     setTotalTempTimers(
-      globalState.tasks.reduce((a, b) => a + (b.time || 0), 0)
+      globalState.boxes
+        .filter(x => x.type !== "interruption")
+        .reduce((a, b) => a + (b.time || 0), 0)
     );
-    setTotalDone(
-      globalState.tasks.reduce((a, b) => a + ((b.done && 1) || 0), 0)
+    setTotalTempTasks(globalState.tasks.reduce((a, b) => a + (b.time || 0), 0));
+    setTotalInterruptions(
+      globalState.boxes
+        .filter(x => x.type === "interruption")
+        .reduce((a, b) => a + (b.events || 0), 0)
     );
+
+    setTotalTempInterruptions(
+      globalState.boxes
+        .filter(x => x.type === "interruption")
+        .reduce((a, b) => a + (b.time || 0), 0)
+    );
+    setTotalDone(globalState.tasks.filter(x => x.done === true).length);
   }, [globalState.tasks, globalState.boxes]);
 
   // const inputRef = useRef(null);
@@ -61,7 +77,7 @@ const App = () => {
     <div className="App">
       <Hero
         style={{
-          backgroundImage: `linear-gradient(to left, rgba(100, 100, 100, 0.92), rgba(0, 0, 0, 0.93)),
+          backgroundImage: `linear-gradient(to right, rgba(32,156,238,0.99), rgba(32,156,238, 0.93)),
           url(${Top})`,
           backgroundPosition: "center",
           backgroundSize: "cover",
@@ -90,6 +106,7 @@ const App = () => {
                 <Heading renderAs="p">{moment().format("DD/MM/YYYY")}</Heading>
               </div>
             </Level.Item>
+
             <Level.Item style={style}>
               <div>
                 <Heading renderAs="p" heading>
@@ -98,25 +115,92 @@ const App = () => {
                 <Heading renderAs="p">{globalState.tasks.length}</Heading>
               </div>
             </Level.Item>
+
             <Level.Item style={style}>
               <div>
                 <Heading renderAs="p" heading>
-                  Total time
+                  Remaining tasks
                 </Heading>
-                <Heading renderAs="p">
-                  {hoursFormat(totalTempTasks + totalTempTimers)}
+                <Heading renderAs="p" className="has-text-warning">
+                  {globalState.tasks.length - totalDone}
                 </Heading>
               </div>
             </Level.Item>
+
             <Level.Item style={style}>
               <div>
                 <Heading renderAs="p" heading>
                   Tasks done
                 </Heading>
-                <Heading renderAs="p">{totalDone}</Heading>
+                <Heading className="has-text-success" renderAs="p">
+                  {totalDone}
+                </Heading>
+              </div>
+            </Level.Item>
+
+            <Level.Item style={style}>
+              <div>
+                <Heading renderAs="p" heading>
+                  Total interruption time
+                </Heading>
+                <Heading renderAs="p" className="has-text-danger">
+                  {hoursFormat(totalTempInterruptions)}
+                </Heading>
               </div>
             </Level.Item>
           </Level>
+
+          {isSummaryExpanded && (
+            <Level className="is-mobile">
+              <Level.Item style={style}>
+                <div>
+                  <Heading renderAs="p" heading>
+                    Total time
+                  </Heading>
+                  <Heading renderAs="p">
+                    {hoursFormat(totalTempTasks + totalTempTimers)}
+                  </Heading>
+                </div>
+              </Level.Item>
+
+              <Level.Item style={style}>
+                <div>
+                  <Heading renderAs="p" heading>
+                    Total timers time
+                  </Heading>
+                  <Heading renderAs="p">{hoursFormat(totalTempTimers)}</Heading>
+                </div>
+              </Level.Item>
+              <Level.Item style={style}>
+                <div>
+                  <Heading renderAs="p" heading>
+                    Total task time
+                  </Heading>
+                  <Heading renderAs="p" className="has-text-success">
+                    {hoursFormat(totalTempTasks)}
+                  </Heading>
+                </div>
+              </Level.Item>
+              <Level.Item style={style}>
+                <div>
+                  <Heading renderAs="p" heading>
+                    Total interruptions
+                  </Heading>
+                  <Heading renderAs="p" className="has-text-danger">
+                    {totalInterruptions}
+                  </Heading>
+                </div>
+              </Level.Item>
+            </Level>
+          )}
+          <Button
+            style={{ height: "5px" }}
+            className="is-fullwidth"
+            color="dark"
+            onClick={() =>
+              setIsSummaryExpanded(isSummaryExpanded => !isSummaryExpanded)
+            }
+          />
         </Box>
 
         {true && <Todos />}
@@ -149,9 +233,7 @@ const App = () => {
                       }
                     >
                       <option value="basic">Basic timer</option>
-                      <option disabled value="To-do">
-                        To-do
-                      </option>
+                      <option value="interruption">Interruption</option>
                       <option disabled value="detailed">
                         Detailed{" "}
                       </option>
@@ -168,7 +250,7 @@ const App = () => {
                     type="text"
                     name="title"
                     // ref={inputRef}
-                    placeholder="Title of the box..."
+                    placeholder="Title of the timer..."
                     value={globalState.newBox["title"]}
                     onChange={updateValue}
                     onKeyDown={e => {
@@ -200,7 +282,7 @@ const App = () => {
                       }}
                       color={"info"}
                     >
-                      Add box
+                      Add timer
                     </Button>
                   )}
                 </p>
@@ -208,12 +290,25 @@ const App = () => {
             </Columns.Column>
           </Columns>
 
+          {!isHidden &&
+            globalState.boxes
+              .filter(x => x.type === "interruption")
+              .map((x, index) => (
+                <Tile kind="ancestor">
+                  <Tile style={{ flexWrap: "wrap" }}>
+                    <Interruption title={x.title} id={x.id} key={x.id} />
+                  </Tile>
+                </Tile>
+              ))}
+
           {!isHidden && (
             <Tile kind="ancestor">
               <Tile style={{ flexWrap: "wrap" }}>
-                {globalState.boxes.map((x, index) => (
-                  <Timer title={x.title} id={x.id} key={x.id} />
-                ))}
+                {globalState.boxes
+                  .filter(x => x.type !== "interruption")
+                  .map((x, index) => (
+                    <Timer title={x.title} id={x.id} key={x.id} />
+                  ))}
               </Tile>
             </Tile>
           )}

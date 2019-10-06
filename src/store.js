@@ -27,7 +27,7 @@ const initialState = {
     {
       id: 2,
       type: "timer",
-      taskTitle: "Make a smoothie",
+      taskTitle: "Buy figs",
       taskDescription: "Description",
       time: 0,
       isActive: false,
@@ -51,22 +51,30 @@ const initialState = {
       title: "💣 Interruption",
       type: "basic",
       time: 0,
-      isActive: false,
-      activeChrono: null
+      isActive: false
     },
     { id: 4, title: "📅 Meeting", type: "basic", time: 0, isActive: false },
     { id: 5, title: "⏸️ Break", type: "basic", time: 0, isActive: false },
     { id: 6, title: "🚀 Roadmap", type: "basic", time: 0, isActive: false },
     { id: 7, title: "❓ Asking", type: "basic", time: 0, isActive: false },
-    { id: 8, title: "🐞 Bug", type: "basic", time: 0, isActive: false }
+    { id: 8, title: "🐞 Bug", type: "basic", time: 0, isActive: false },
+    {
+      id: 9,
+      title: "❌ Interruptions",
+      type: "interruption",
+      time: 0,
+      isActive: false
+    }
   ]
 };
 
 const actions = {
   // generic
   modifyLine: (store, type, id, field, value) => {
+    console.log("Holi");
+
     store.setState({
-      tasks: inmutableSet(store.state[type], id, field, value)
+      [type]: inmutableSet(store.state[type], id, field, value)
     });
   },
 
@@ -113,7 +121,7 @@ const actions = {
     store.setState({ tasks: store.state.tasks.concat(task) });
 
     store.setState({ newTask: { type: "basic", taskTitle: "" } });
-    console.log("tasks", store.state.tasks);
+    console.log(store.state.tasks);
   },
 
   removeTask: (store, id) => {
@@ -137,7 +145,7 @@ const actions = {
     store.setState({ boxes: store.state.boxes.concat(box) });
 
     store.setState({ newBox: { type: "basic", title: "" } });
-    console.log("boxes", store.state.boxes);
+    console.log(store.state.boxes);
   },
 
   removeBox: (store, id) => {

@@ -12,8 +12,6 @@ const Todos = props => {
     let maxId = Math.max.apply(Math, globalState.tasks.map(o => o.id));
     globalActions.setNewTaskSelect("id", maxId >= 0 ? maxId + 1 : 0);
     globalActions.setNewTaskSelect("time", 0);
-
-    console.log(globalState.newTask);
   }
 
   return (
