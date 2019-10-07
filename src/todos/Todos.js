@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Columns, Box, Button } from "react-bulma-components";
+import { Container, Columns, Box, Button } from "react-bulma-components";
 import { useGlobal } from "../store";
 import Todo from "./Todo";
 
@@ -15,7 +15,7 @@ const Todos = props => {
   }
 
   return (
-    <Box>
+    <Container>
       <Columns>
         <Columns.Column>
           <Button
@@ -94,12 +94,14 @@ const Todos = props => {
 
       {!isHidden && (
         <Columns>
-          {globalState.tasks.map(x => (
-            <Todo key={x.id} id={x.id} info={x} />
-          ))}
+          {globalState.tasks
+            .filter(x => x.done === false || x.done == null)
+            .map(x => (
+              <Todo key={x.id} id={x.id} info={x} />
+            ))}
         </Columns>
       )}
-    </Box>
+    </Container>
   );
 };
 

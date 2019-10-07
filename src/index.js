@@ -3,6 +3,8 @@ import ReactDOM from "react-dom";
 import Timer from "./timers/Timer";
 import Interruption from "./timers/Interruption";
 import Todos from "./todos/Todos";
+import Dones from "./todos/Dones";
+
 import { hoursFormat } from "./helpers/helpers";
 import moment from "moment";
 import Top from "./medias/top.jpg";
@@ -37,6 +39,7 @@ const App = () => {
 
   const [isHidden, setIsHidden] = useState(false);
   const [isSummaryExpanded, setIsSummaryExpanded] = useState(false);
+  const [isRoadmapHidden, setIsRoadmapHidden] = useState(false);
 
   const [totalDone, setTotalDone] = useState(0);
 
@@ -96,114 +99,136 @@ const App = () => {
       </Hero>
 
       <Section>
-        <Box>
-          <Level className="is-mobile">
-            <Level.Item style={style}>
-              <div>
-                <Heading renderAs="p" heading>
-                  Today
-                </Heading>
-                <Heading renderAs="p">{moment().format("DD/MM/YYYY")}</Heading>
-              </div>
-            </Level.Item>
-
-            <Level.Item style={style}>
-              <div>
-                <Heading renderAs="p" heading>
-                  Total tasks
-                </Heading>
-                <Heading renderAs="p">{globalState.tasks.length}</Heading>
-              </div>
-            </Level.Item>
-
-            <Level.Item style={style}>
-              <div>
-                <Heading renderAs="p" heading>
-                  Remaining tasks
-                </Heading>
-                <Heading renderAs="p" className="has-text-warning">
-                  {globalState.tasks.length - totalDone}
-                </Heading>
-              </div>
-            </Level.Item>
-
-            <Level.Item style={style}>
-              <div>
-                <Heading renderAs="p" heading>
-                  Tasks done
-                </Heading>
-                <Heading className="has-text-success" renderAs="p">
-                  {totalDone}
-                </Heading>
-              </div>
-            </Level.Item>
-
-            <Level.Item style={style}>
-              <div>
-                <Heading renderAs="p" heading>
-                  Total interruption time
-                </Heading>
-                <Heading renderAs="p" className="has-text-danger">
-                  {hoursFormat(totalTempInterruptions)}
-                </Heading>
-              </div>
-            </Level.Item>
-          </Level>
-
-          {isSummaryExpanded && (
-            <Level className="is-mobile">
+        <Columns>
+          <Columns.Column size={12}>
+            <Level>
               <Level.Item style={style}>
                 <div>
                   <Heading renderAs="p" heading>
-                    Total time
+                    Today
                   </Heading>
-                  <Heading renderAs="p">
-                    {hoursFormat(totalTempTasks + totalTempTimers)}
-                  </Heading>
-                </div>
-              </Level.Item>
-
-              <Level.Item style={style}>
-                <div>
-                  <Heading renderAs="p" heading>
-                    Total timers time
-                  </Heading>
-                  <Heading renderAs="p">{hoursFormat(totalTempTimers)}</Heading>
-                </div>
-              </Level.Item>
-              <Level.Item style={style}>
-                <div>
-                  <Heading renderAs="p" heading>
-                    Total task time
-                  </Heading>
-                  <Heading renderAs="p" className="has-text-success">
-                    {hoursFormat(totalTempTasks)}
-                  </Heading>
-                </div>
-              </Level.Item>
-              <Level.Item style={style}>
-                <div>
-                  <Heading renderAs="p" heading>
-                    Total interruptions
-                  </Heading>
-                  <Heading renderAs="p" className="has-text-danger">
-                    {totalInterruptions}
+                  <Heading size={4} renderAs="p">
+                    {moment().format("DD/MM/YYYY")}
                   </Heading>
                 </div>
               </Level.Item>
             </Level>
-          )}
-          <Button
-            style={{ height: "5px" }}
-            className="is-fullwidth"
-            color="dark"
-            onClick={() =>
-              setIsSummaryExpanded(isSummaryExpanded => !isSummaryExpanded)
-            }
-          />
+          </Columns.Column>
+        </Columns>
+
+        <Box>
+          <Columns className="is-mobile">
+            <Columns.Column className="is-12-tablet">
+              <Level className="is-tablet-only">
+                <Level.Item style={style}>
+                  <div>
+                    <Heading renderAs="p" heading>
+                      Total tasks
+                    </Heading>
+                    <Heading renderAs="p">{globalState.tasks.length}</Heading>
+                  </div>
+                </Level.Item>
+
+                <Level.Item style={style}>
+                  <div>
+                    <Heading renderAs="p" heading>
+                      Remaining tasks
+                    </Heading>
+                    <Heading renderAs="p" className="has-text-warning">
+                      {globalState.tasks.length - totalDone}
+                    </Heading>
+                  </div>
+                </Level.Item>
+
+                <Level.Item style={style}>
+                  <div>
+                    <Heading renderAs="p" heading>
+                      Tasks done
+                    </Heading>
+                    <Heading className="has-text-success" renderAs="p">
+                      {totalDone}
+                    </Heading>
+                  </div>
+                </Level.Item>
+
+                <Level.Item style={style}>
+                  <div>
+                    <Heading renderAs="p" heading>
+                      Total interruption time
+                    </Heading>
+                    <Heading renderAs="p" className="has-text-danger">
+                      {hoursFormat(totalTempInterruptions)}
+                    </Heading>
+                  </div>
+                </Level.Item>
+              </Level>
+            </Columns.Column>
+            {isSummaryExpanded && (
+              <Columns.Column>
+                {" "}
+                <Level className="is-touch">
+                  <Level.Item style={style}>
+                    <div>
+                      <Heading renderAs="p" heading>
+                        Total time
+                      </Heading>
+                      <Heading renderAs="p">
+                        {hoursFormat(totalTempTasks + totalTempTimers)}
+                      </Heading>
+                    </div>
+                  </Level.Item>
+
+                  <Level.Item style={style}>
+                    <div>
+                      <Heading renderAs="p" heading>
+                        Total timers time
+                      </Heading>
+                      <Heading renderAs="p">
+                        {hoursFormat(totalTempTimers)}
+                      </Heading>
+                    </div>
+                  </Level.Item>
+                  <Level.Item style={style}>
+                    <div>
+                      <Heading renderAs="p" heading>
+                        Total task time
+                      </Heading>
+                      <Heading renderAs="p" className="has-text-success">
+                        {hoursFormat(totalTempTasks)}
+                      </Heading>
+                    </div>
+                  </Level.Item>
+                  <Level.Item style={style}>
+                    <div>
+                      <Heading renderAs="p" heading>
+                        Total interruptions
+                      </Heading>
+                      <Heading renderAs="p" className="has-text-danger">
+                        {totalInterruptions}
+                      </Heading>
+                    </div>
+                  </Level.Item>
+                </Level>
+              </Columns.Column>
+            )}
+          </Columns>
+          <Columns>
+            {" "}
+            <Columns.Column>
+              <Button
+                style={{ height: "5px" }}
+                className="is-fullwidth"
+                color="dark"
+                onClick={() =>
+                  setIsSummaryExpanded(isSummaryExpanded => !isSummaryExpanded)
+                }
+              />
+            </Columns.Column>
+          </Columns>
         </Box>
 
-        {true && <Todos />}
+        <Box>{true && <Todos />}</Box>
+        {globalState.tasks.find(x => x.done === true) && <Box>{<Dones />}</Box>}
 
         <Box>
           <Columns>
@@ -314,34 +339,45 @@ const App = () => {
           )}
         </Box>
 
-        <Box>
-          <Message color={"info"}>
-            <Message.Header>🚀 Roadmap</Message.Header>
-            <Message.Body>
-              <strong />
-              <ul style={{ listStyleType: "circle", marginLeft: "30px" }}>
-                <li>✔ Disable button if no text </li>
-                <li>✔ Add global summary</li>
-                <li>Autofocus input </li>
-                <li>
-                  ✔Timer tasks front: <em>13m 19s</em>
-                </li>
-                <li>interruptions type and shortcuts </li>
-                <li>✔Timer tasks back</li>
-                <li>Send tasks to done </li>
-                <li>✔ Add on enter </li>
-                <li>✔Unify boxs props</li>
-                <li>Edit titles</li>
-                <li>Remove/Add events</li>
-                <li>Fix ugly front issues 🙊 </li>
-                <li>Exclusive boxes (turns off the rest)</li>
-                <li>To-do boxes </li>
-
-                <li>Detailed boxes</li>
-              </ul>
-            </Message.Body>
-          </Message>
-        </Box>
+        {!isRoadmapHidden && (
+          <Box>
+            <Message color={"info"}>
+              <Message.Header>
+                🚀 Roadmap{" "}
+                <Button
+                  remove
+                  onClick={() =>
+                    setIsRoadmapHidden(isRoadmapHidden => !isRoadmapHidden)
+                  }
+                />
+              </Message.Header>
+              <Message.Body>
+                <strong />
+                <ul style={{ listStyleType: "circle", marginLeft: "30px" }}>
+                  <li>✔ Disable button if no text </li>
+                  <li>✔ Add global summary</li>
+                  <li>Autofocus input </li>
+                  <li>
+                    ✔Timer tasks front: <em>13m 19s</em>
+                  </li>
+                  <li>interruptions type and shortcuts </li>
+                  <li>✔Timer tasks back</li>
+                  <li>✔Send tasks to done </li>
+                  <li>✔ Add on enter </li>
+                  <li>✔Unify boxs props</li>
+                  <li>Edit titles</li>
+                  <li>Remove/Add events</li>
+                  <li>Fix ugly front issues 🙊 </li>
+                  <li>Exclusive boxes (turns off the rest)</li>
+                  <li>To-do boxes </li>
+                  <li>Select period (day/week/month) </li>
+                  <li>Children tasks </li>
+                  <li>Detailed boxes</li>
+                </ul>
+              </Message.Body>
+            </Message>
+          </Box>
+        )}
       </Section>
     </div>
   );
