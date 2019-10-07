@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
 import moment from "moment";
-import { inmutableSet } from "./helpers/helpers";
+import { inmutableSet, inmutableVectorSet } from "./helpers/helpers";
 
 import useGlobalHook from "use-global-hook";
 
@@ -69,12 +69,16 @@ const initialState = {
 };
 
 const actions = {
-  // generic
+  // generic awesome functions
   modifyLine: (store, type, id, field, value) => {
-    console.log("Holi");
-
     store.setState({
       [type]: inmutableSet(store.state[type], id, field, value)
+    });
+  },
+
+  modifyVectorLine: (store, type, id, field, vector) => {
+    store.setState({
+      [type]: inmutableVectorSet(store.state[type], id, field, vector)
     });
   },
 
@@ -106,15 +110,7 @@ const actions = {
   },
 
   increaseTimer: (store, id) => {
-    const oldValue = store.state.tasks.find(x => x.id === id);
-    const newValue = { ...oldValue, time: oldValue.time + 1 };
-    const indexOldElement = store.state.tasks.findIndex(
-      ({ id }) => id === newValue.id
-    );
-    const newArray = Object.assign([...store.state.tasks], {
-      [indexOldElement]: newValue
-    });
-    store.setState({ tasks: newArray });
+    store.actions.modifyVectorLine("tasks", id, "time", "x+1");
   },
 
   addTask: (store, task) => {

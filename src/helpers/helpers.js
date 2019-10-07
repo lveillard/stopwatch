@@ -20,3 +20,15 @@ export const inmutableSet = (objeto, id, field, value) => {
   });
   return newArray;
 };
+
+export const inmutableVectorSet = (objeto, id, field, vector) => {
+  const oldValue = objeto.find(x => x.id === id);
+
+  const correctedVector = vector.replace(/x/g, "oldValue[field]");
+  const newValue = { ...oldValue, [field]: eval(correctedVector) };
+  const indexOldElement = objeto.findIndex(({ id }) => id === newValue.id);
+  const newArray = Object.assign([...objeto], {
+    [indexOldElement]: newValue
+  });
+  return newArray;
+};
